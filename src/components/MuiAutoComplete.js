@@ -14,10 +14,13 @@ const skills = [
   "TypeScript",
 ];
 
+const skillsObject = skills.map((skill) => ({ title: skill, value: skill }));
+
 function MuiAutoComplete() {
   const [value, setValue] = useState(null);
   const [values, setValues] = useState([]);
-  console.log({ value, values });
+  const [valuesObj, setValuesObj] = useState([]);
+  console.log({ value, values, valuesObj });
   return (
     <Stack spacing={2} marginTop="20px" width="1050px">
       <Stack spacing={2} direction="row" width="1050px">
@@ -73,6 +76,7 @@ function MuiAutoComplete() {
             <TextField {...params} label="Multiple values" />
           )}
           onChange={(e, newValue) => setValues(newValue)}
+          value={values}
         />
 
         <Autocomplete
@@ -84,9 +88,15 @@ function MuiAutoComplete() {
           options={skills}
           getOptionLabel={(option) => option}
           renderInput={(params) => (
-            <TextField {...params} label="Multiple values with create new" />
+            <TextField
+              {...params}
+              label="Most suitable Multiple values with create new"
+            />
           )}
-          onChange={(e, newValue) => setValues(newValue)}
+          onChange={(e, newValue) =>
+            setValues(newValue.map((val) => val.replace("Add ", "")))
+          }
+          value={values}
           freeSolo
           filterOptions={(options, params) => {
             const filtered = filter(options, params);
@@ -94,10 +104,70 @@ function MuiAutoComplete() {
             // Suggest the creation of a new value
             const isExisting = options.some((option) => inputValue === option);
             if (inputValue !== "" && !isExisting) {
-              filtered.push(`Add "${inputValue}"`);
+              filtered.push(`Add ${inputValue}`);
             }
             return filtered;
           }}
+        />
+
+        <Autocomplete
+          fullWidth
+          multiple
+          freeSolo
+          disableCloseOnSelect
+          limitTags={1}
+          id="tags-standard"
+          options={skillsObject}
+          getOptionLabel={(option) => {
+            // Value selected with enter, right from the input
+            if (typeof option === "string") {
+              return option;
+            }
+            // Add "xxx" option created dynamically
+            if (option.inputValue) {
+              return option.inputValue;
+            }
+            // Regular option
+            return option.title;
+          }}
+          renderOption={(props, option) => <li {...props}>{option.title}</li>}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Multiple Objects values with create new"
+            />
+          )}
+          filterOptions={(options, params) => {
+            const filtered = filter(options, params);
+
+            const { inputValue } = params;
+            // Suggest the creation of a new value
+            const isExisting = options.some(
+              (option) => inputValue === option.title
+            );
+            if (inputValue !== "" && !isExisting) {
+              filtered.push({
+                inputValue,
+                title: `Add "${inputValue}"`,
+              });
+            }
+            return filtered;
+          }}
+          onChange={(event, newValue) => {
+            if (typeof newValue === "string") {
+              setValuesObj({
+                title: newValue,
+              });
+            } else if (newValue && newValue.inputValue) {
+              // Create a new value from the user input
+              setValuesObj({
+                title: newValue.inputValue,
+              });
+            } else {
+              setValuesObj(newValue);
+            }
+          }}
+          value={valuesObj}
         />
       </Stack>
     </Stack>
