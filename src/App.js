@@ -1,4 +1,5 @@
 import "./App.css";
+import MuiAutoCompleateAsync from "./components/MuiAutoCompleateAsync";
 import MuiAutoComplete from "./components/MuiAutoComplete";
 import MuiButton from "./components/MuiButton";
 import MuiCheckbox from "./components/MuiCheckbox";
@@ -21,6 +22,7 @@ function App() {
       <MuiSwitch />
       <MuiRatting />
       <MuiAutoComplete />
+      <MuiAutoCompleateAsync />
     </div>
   );
 }
